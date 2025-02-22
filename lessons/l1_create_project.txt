@@ -1,0 +1,118 @@
+https://www.youtube.com/watch?v=EVrMbS14FdE&list=PLA0M1Bcd0w8xZA3Kl1fYmOH_MfLpiYMRs&index=2
+
+Создаём виртуальное окружение проекта через pycharm.
+выбираем Virtualenv
+версию питона
+create
+если в консоле что-то типа (.venv) PS D:\cooding\python\django\ - мы в виртуальном окружении
+ставим джанго pip install django
+создаём проект django-admin startproject <имя проекта> (обычно имя проекта совпадает с доменом) -
+это еще не приложение
+
+Переходим в проект(первая папка с названием, так как внутри неё еще одна такая же)
+python manage.py runserver
+
+активация миграции бд
+python manage.py migrate
+
+Вот тут уже создаём приложение
+python manage.py startapp best_game_shop
+
+
+Подключаем приложение к сайту
+А файлу settings.py ищем INSTALLED_APPS
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'best_game_shop.apps.BestGameShopConfig' <---
+]
+
+создаём модели для работы с БД
+в приложении открываем файл models.py
+
+class Games(models.Model):
+    title = models.CharField(max_length=30)
+    #blank=True - поле может быть пустым
+    content = models.TextField(blank=True)
+    time_create = models.DateTimeField(auto_now_add=True)
+    time_update = models.DateTimeField(auto_now=True)
+    #В Django category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True)
+    #это определение поля модели, которое создает связь "многие к одному" (ForeignKey) с другой моделью.
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True)
+
+    def __str__(self):
+        return self.title
+
+class Category(models.Model):
+    name = models.CharField(max_length=30, db_index=True)
+
+    def __str__(self):
+        return self.name
+
+После делаем снова миграцию
+python manage.py makemigrations
+чтобы создалить таблицы - выполняем миграции
+python manage.py migrate
+
+Создаём суперюзера
+python manage.py createsuperuser
+вводим имя (ввёл root как в учебном ролике)
+
+переходим в браузере http://127.0.0.1:8000/admin/login
+логинимся
+
+регистрируем наше приложение
+переходим в файл admin
+from django.contrib import admin
+# Register your models here.
+from .models import Games
+admin.site.register(Games)
+
+создаём если нужно какие-то записи через админку
+
+Ставим djangorestframework
+pip install djangorestframework
+
+регистрируем в проекте drfsite -> settings.py
+INSTALLED_APPS = [
+    ....
+    'rest_framework' <---------
+]
+
+Определяем представление(вьюхи)
+views.py
+from rest_framework import generics
+from .models import Games
+from django.shortcuts import render
+
+# Create your views here.
+class GamesAPIView(generics.ListAPIView):
+    queryset = Games.objects.all()
+    serializer_class = GamesSerializer
+
+создаём сериализатор GamesSerializer
+создаём файл в best_game_shop serializers.py
+from rest_framework import serializers
+from .models import  Games
+
+class GamesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Games
+        fields = ('title', 'category_id')
+
+
+Связываем представление с маршрутом
+drfsite -> urls.py
+from django.contrib import admin
+from django.urls import path
+
+from best_game_shop.views import GamesAPIView
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/v1/gameslist', GamesAPIView.as_view()) <---
+]
