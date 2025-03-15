@@ -12,7 +12,7 @@ class Games(models.Model):
     category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True)
 
     def __str__(self):
-        return self.title
+         return self.title
 
 class Category(models.Model):
     class GameType(models.TextChoices):

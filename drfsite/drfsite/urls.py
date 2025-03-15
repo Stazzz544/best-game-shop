@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from best_game_shop.views import GamesAPIView
+from best_game_shop.views import * #импортируем всё, что есть в файле
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/gameslist', GamesAPIView.as_view())
+    path('api/v1/gameslist/', GamesApiList.as_view()),
+    path('api/v1/gameslist/<int:pk>/', GamesApiList.as_view()), # тут класс сам поймёт, какой из
+    # методов дальше вызвать
+    path('api/v1/game_delete/<int:pk>/', GamesApiDelete.as_view()),
 ]
