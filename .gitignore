@@ -1,0 +1,29 @@
+plaintext
+Copy
+# Секреты и локальные настройки
+.env
+settings/local.py
+secrets.json
+
+# База данных и медиафайлы
+db.sqlite3
+media/
+staticfiles/
+
+# Кэш Python
+__pycache__/
+*.pyc
+
+# IDE и редакторы
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Зависимости
+node_modules/
+package-lock.json
+yarn.lock
+
+# Логи
+*.log

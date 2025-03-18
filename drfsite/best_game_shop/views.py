@@ -1,7 +1,7 @@
-from django.core.serializers import serialize
-from django.forms import model_to_dict
-from rest_framework.response import Response
-from rest_framework.views import APIView
+# from django.core.serializers import serialize
+# from django.forms import model_to_dict
+# from rest_framework.response import Response
+# from rest_framework.views import APIView
 from .models import Games
 from .serializers import GamesSerializer
 from rest_framework import generics
@@ -16,8 +16,19 @@ class GamesApiList(generics.ListCreateAPIView):
     queryset = Games.objects.all()
     serializer_class = GamesSerializer
 
+class GamesAliUpdate(generics.UpdateAPIView):
+    # Это ленивый запрос. Тут просто связывавется queryset с моделью Games
+    # класс сам обработает атрибут и возвратит одну запись
+    queryset = Games.objects.all()
+    serializer_class = GamesSerializer
+
 class GamesApiDelete(generics.DestroyAPIView):
-    queryset = Games.objects.all()  # Указываем queryset
+    queryset = Games.objects.all()
+    serializer_class = GamesSerializer
+
+#универсальный CRUD метод
+class GamesApiDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Games.objects.all()
     serializer_class = GamesSerializer
 
 
