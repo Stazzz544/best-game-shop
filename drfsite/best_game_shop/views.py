@@ -2,9 +2,11 @@
 # from django.forms import model_to_dict
 # from rest_framework.response import Response
 # from rest_framework.views import APIView
-from .models import Games
+from .models import Category, Games
 from .serializers import GamesSerializer
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins 
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # Create your views here.
 #class GamesAPIView(generics.ListAPIView):
@@ -26,8 +28,23 @@ class GamesViewSet( mixins.CreateModelMixin,
                     mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     viewsets.GenericViewSet):
-    queryset = Games.objects.all()
+    #queryset = Games.objects.all()
     serializer_class = GamesSerializer    
+
+    #переопределение метода # queryset (его нужно в этом случае закомментить)
+    #возвращает 3 записи или одну запись по id. Можно более сложные запросы писать
+    def get_queryset(self):
+        pk=self.kwargs.get('pk')
+        if not pk:
+            return Games.objects.all()[:3] 
+        
+        return Games.objects.filter(pk=pk)
+    
+    #http://127.0.0.1:8000/api/v1/games/1/category/
+    @action(methods=['get'], detail=True)
+    def category(self, request, pk=None):
+        category = Category.objects.get(pk=pk)
+        return Response({'category': category.name})
 
 # mixins.CreateModelMixin,
 # mixins.RetrieveModelMixin,

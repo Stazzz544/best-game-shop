@@ -25,8 +25,9 @@ from drf_yasg import openapi
 
 from best_game_shop.views import * #импортируем всё, что есть в файле
 
-router = routers.SimpleRouter()
-router.register(r'games', GamesViewSet)
+router = routers.DefaultRouter()
+router.register(r'games', GamesViewSet, basename='games') #третим параметром можно указать basename='games' - это имя, которое будет использоваться в урлах
+print(router.urls) #- посмотреть урлы, которые нагенерились,  т.е. все
 
 schema_view = get_schema_view(
    openapi.Info(
